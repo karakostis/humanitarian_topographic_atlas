@@ -1,8 +1,8 @@
 /*!
- * ol-geocoder - v3.0.0
+ * ol-geocoder - v3.2.0
  * A geocoder extension for OpenLayers.
  * https://github.com/jonataswalker/ol-geocoder
- * Built: Tue Nov 14 2017 19:04:02 GMT-0200 (-02)
+ * Built: Sat Jul 28 2018 15:24:04 GMT-0300 (Brasilia Standard Time)
  */
 .ol-geocoder.gcd-gl-container {
   position: absolute;
@@ -104,6 +104,9 @@
         background-color: #d4d4d4; }
   .ol-geocoder ul.gcd-gl-result > li:nth-child(odd) {
     background-color: #e0ffe0; }
+
+.ol-geocoder ul.gcd-gl-result:empty {
+  display: none; }
 
 .ol-geocoder.gcd-txt-container {
   position: absolute;
@@ -210,41 +213,38 @@
   .ol-geocoder ul.gcd-txt-result > li:nth-child(odd) {
     background-color: #e0ffe0; }
 
+.ol-geocoder ul.gcd-txt-result:empty {
+  display: none; }
+
 .ol-geocoder .gcd-hidden {
   opacity: 0;
   visibility: hidden; }
 
 .ol-geocoder .gcd-pseudo-rotate::after {
-  -webkit-animation: spin .7s linear infinite;
-          animation: spin .7s linear infinite; }
-
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
-  to {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+  animation: spin .7s linear infinite; }
 
 @keyframes spin {
   from {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
+    transform: rotate(0deg); }
   to {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+    transform: rotate(360deg); } }
+
+.gcd-address {
+  font-size: 0.875em;
+  font-weight: 500;
+  color: #333; }
 
 .gcd-road {
   font-size: 0.875em;
   font-weight: 500;
-  color: #000; }
+  color: #333; }
 
 .gcd-city {
   font-size: 0.75em;
   font-weight: normal;
-  color: #000; }
+  color: #333; }
 
 .gcd-country {
   font-size: 0.75em;
   font-weight: lighter;
-  color: #444; }
+  color: #333; }

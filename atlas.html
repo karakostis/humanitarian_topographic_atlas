@@ -9,8 +9,8 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/ol/ol.css" type="text/css">
-    <link rel="stylesheet" href="css/ol/ol3-sidebar.css" />
-    <link rel="stylesheet" href="css/ol/ol-geocoder.css" />
+    <link rel="stylesheet" href="css/ol/ol3-sidebar.min.css" />
+    <link rel="stylesheet" href="css/ol/ol-geocoder.min.css" />
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -184,16 +184,16 @@
       <div id="popup-content"></div>
     </div>
 
-    <script src="http://openlayers.org/en/master/build/ol.js" type="text/javascript"></script>
-    <script src="js/ol/ol3-sidebar.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="/js/ol/ol-geocoder-debug.js"></script>
+    <script src="js/ol/ol_v4.6.5.js" type="text/javascript"></script>
+    <script src="js/ol/ol3-sidebar.min.js"></script>
+    <script src="js/jquery/jquery-1.11.0.min.js"></script>
+    <script src="js/ol/ol-geocoder.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/ol-geocoder"></script> -->
     <script>
 
       var bing_api_key = 'AnSsDFo9S5gmFZIU7ZxiZrVNCUcAC1ZUv6LtNO38kI7QemgYDt6F2IU2eFyyHx1Y'
-      var filterstring = "map_done='yes'";
+      var filterstring = "published='yes'";
 
 
       var style = new ol.style.Style({
@@ -234,7 +234,7 @@
       var grid_layer = new ol.layer.Tile({
         //extent: [-13884991, 2870341, -7455066, 6338219],
         source: new ol.source.TileWMS({
-          url: 'http://ogcserver.gis.wfp.org/geoserver/wms',
+          url: 'http://geonode.wfp.org/geoserver/wms',
           params: {'LAYERS': 'geonode:view_wld_grid_100ka1_wfp', 'FORMAT': 'image/png8', 'TRANSPARENT': true, 'CQL_FILTER': filterstring, 'TILED': true },
           serverType: 'geoserver',
           transition: 0
@@ -306,10 +306,7 @@
           return feature;
         });
         if (feature) {
-          var geometry = feature.getGeometry();
-          var extent = geometry.getExtent();
-          view.fit(extent);
-          map.getView().setZoom(7);
+          //map.getView().setZoom(6);
           current_zoom = map.getView().getZoom();
           if (current_zoom >=5){
             getPopup();
@@ -317,6 +314,10 @@
             //    grid_layer.setVisible(true);
             //}, 1000);
             vectorLayer.setVisible(false);
+          } else {
+            var geometry = feature.getGeometry();
+            var extent = geometry.getExtent();
+            view.fit(extent);
           }
         }
       });
@@ -325,7 +326,6 @@
         //map_extent = map.getView().calculateExtent(map.getSize())
         var current_zoom = map.getView().getZoom();
         if (current_zoom >=6){
-
           setTimeout(function() {
               grid_layer.setVisible(true);
           }, 200);
@@ -342,16 +342,56 @@
         map.on('click', function (evt) {
           var viewResolution = map.getView().getResolution();
           var coord = evt.coordinate;
+
             if (grid_layer.getVisible() && grid_layer.get('name') != 'Basemap') {
               var url = grid_layer.getSource().getGetFeatureInfoUrl(coord, viewResolution, 'EPSG:3857', {
                   'INFO_FORMAT': 'text/html',
                   'FEATURE_COUNT': '2',
+
               });
+              /*
+              if (url) {
+                var parser = new ol.format.GeoJSON();
+                console.log(parser)
+                $.ajax({
+                      url: url,
+                      dataType: 'jsonp',
+                      jsonpCallback: 'parseResponse'
+                    }).then(function(response) {
+                      var result = parser.readFeatures(response);
+                      if (result.length) {
+                        console.log(result)
+                        var iso3 = [];
+                        var map_code = [];
+                        var url_pdf = [];
+                        for (var i = 0, ii = result.length; i < ii; ++i) {
+                          iso3.push(result[i].get('iso3_all'));
+                          map_code.push(result[i].get('map_code'));
+                          url_pdf.push(result[i].get('url'));
+                        }
+
+
+
+                        for (i = 0; i < iso3.length; i++) {
+                          popup_content = "<p><b> 100k Topographic Map of grid " + map_code[i] + "</b> </p> <hr> <ul> <li> something </li> <li>sdfsdf </li> <li> sdfsf </li> <ul/>"
+                        }
+                        $("#popup").css("display", "block");
+                        popup_overlay.setPosition(coord);
+                        content.innerHTML = '<p>You clicked here:</p><code>'
+
+                        //content.innerHTML = iso3.join(', ');
+                        //content.innerHTML = map_code.join(', ');
+                        //content.innerHTML = url_pdf.join(', ');
+                      }
+                    });
+              } */
+
               if (url) {
                   $("#popup").css("display", "block");
                   popup_overlay.setPosition(coord);
                   content.innerHTML = '<iframe src="' + url + '" id="id_iframe" style="border:0px #BD8D46 dotted;" scrolling="auto" frameborder="no" align="center"></iframe>';
               }
+
             }
         });
       }
@@ -361,17 +401,20 @@
        image: icon,
     });
     */
+
     var geocoder = new Geocoder('nominatim', {
-      provider: 'osm',
+      provider: 'bing',
+      key: bing_api_key,
       autoComplete: 'true',
       //featureType: 'country',
-      autoCompleteMinLength: '2',
+      autoCompleteMinLength: '4',
       //countrycodes: 'ht,lk,do,sy,td',
       lang: 'en-US', //en-US, fr-FR
       placeholder: 'Search for ...',
       targetType: 'glass-button',
       limit: 13,
       keepOpen: false,
+      preventDefault: false,
       //featureStyle: style
     });
 
